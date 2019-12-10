@@ -1,0 +1,11 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: http-ingress
+spec:
+  backend:
+    serviceName: nginx
+    servicePort: 443
+#  backend:
+#    serviceName: ftp-http-service
+#    servicePort: 21

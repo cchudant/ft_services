@@ -1,0 +1,9 @@
+#!/bin/bash
+
+adduser --disabled-password --gecos "" "$SSH_USER"
+usermod --password "$SSH_PASSWORD" "$SSH_USER"
+
+service nginx start
+service ssh start
+
+tail -f /dev/null

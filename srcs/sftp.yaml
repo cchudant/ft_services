@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sftp
+  labels:
+    app: ft_services
+spec:
+  ports:
+  - port: 22
+  selector:
+    app: ft_services
+    tier: sftp
+  type: NodePort
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sftp-pv-claim
+  labels:
+    app: ft_services
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sftp
+  labels:
+    app: ft_services
+spec:
+  selector:
+    matchLabels:
+      app: ft_services
+      tier: sftp
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ft_services
+        tier: sftp
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: sftp
+        image: atmoz/sftp:latest
+        ports:
+        - containerPort: 22
+        volumeMounts:
+        - mountPath: /home/unicorn
+          name: sftp-persistant-storage
+        - mountPath: /etc/ssh/ssh_host_ed25519_key
+          name: sftp-host-keys
+          subPath: ssh_host_ed25519_key
+          readOnly: true
+        - mountPath: /etc/ssh/ssh_host_rsa_key
+          name: sftp-host-keys
+          subPath: ssh_host_rsa_key
+          readOnly: true
+        env:
+        - name: SFTP_USERS
+          valueFrom:
+            secretKeyRef:
+              name: sftp-users
+              key: users
+      volumes:
+      - name: sftp-persistant-storage
+        persistentVolumeClaim:
+          claimName: sftp-pv-claim
+      - name: sftp-host-keys
+        secret:
+          secretName: sftp-host-keys

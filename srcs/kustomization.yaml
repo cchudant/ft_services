@@ -1,0 +1,25 @@
+configMapGenerator:
+- name: nginx-config
+  files:
+    - nginx/nginx.conf
+    - nginx/ssl-cert.crt
+secretGenerator:
+- name: mysql-pass
+  literals:
+  - password=unicorn
+- name: sftp-users
+  literals:
+  - users=unicorn:unicorn:1001
+- name: sftp-host-keys
+  files:
+  - sftp-keys/*
+- name: nginx-ssl-key
+  files:
+  - nginx/ssl-cert.key
+resources:
+- mysql.yaml
+- wordpress.yaml
+- phpmyadmin.yaml
+- sftp.yaml
+- kubernetes-dashboard.yaml
+- ingress.yaml
