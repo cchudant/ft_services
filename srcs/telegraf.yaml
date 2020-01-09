@@ -5,9 +5,9 @@ metadata:
   labels:
     name: telegraf
 spec:
-  type: ClusterIP
   selector:
     name: telegraf
+  clusterIP: None
 
 ---
 
@@ -49,34 +49,19 @@ kind: ClusterRole
 metadata:
   name: telegraf-role
 rules:
-- apiGroups:
-  - ""
+- apiGroups: [""]
   resources:
+  - persistentvolumes
   - nodes
-  - nodes/proxy
-  - nodes/metrics
-  - services
   - endpoints
+  - deployments
+  - services
   - pods
+  - statefulsets
+  - daemonsets
+  - persistentvolumeclaims
   - ingresses
-  - configmaps
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - "extensions"
-  resources:
-  - ingresses/status
-  - ingresses
-  verbs:
-  - get
-  - list
-  - watch
-- nonResourceURLs:
-  - "/metrics"
-  verbs:
-  - get
+  verbs: ["get", "list"]
 
 ---
 
@@ -87,6 +72,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: telegraf-account
+    namespace: default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

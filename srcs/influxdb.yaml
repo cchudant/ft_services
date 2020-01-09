@@ -33,6 +33,9 @@ kind: Deployment
 metadata:
   name: influxdb
 spec:
+  selector:
+    matchLabels:
+      app: influxdb
   replicas: 1
   template:
     metadata:
@@ -45,6 +48,9 @@ spec:
         volumeMounts:
         - name: influxdb-persistent-storage
           mountPath: /var/lib/influxdb
+        env:
+        - name: INFLUXDB_DB
+          value: influxdb
       volumes:
       - name: influxdb-persistent-storage
         persistentVolumeClaim:
