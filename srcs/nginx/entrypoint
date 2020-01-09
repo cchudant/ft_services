@@ -1,9 +1,15 @@
 #!/bin/bash
 
-adduser --disabled-password --gecos "" "$SSH_USER"
-usermod --password "$SSH_PASSWORD" "$SSH_USER"
+mkdir /var/www
+mkdir /var/www/phpmyadmin
+mkdir /var/www/wordpress
+mkdir /var/www/grafana
 
-service nginx start
+[ -z "$SSH_USER" ] && SSH_USER=admin
+
+adduser --disabled-password --gecos "" "$SSH_USER"
+[ -s "$SSH_PASSWORD" ] && usermod --password "$SSH_PASSWORD" "$SSH_USER"
+
 service ssh start
 
-tail -f /dev/null
+/usr/sbin/nginx -g 'daemon off;'

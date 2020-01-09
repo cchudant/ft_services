@@ -7,3 +7,5 @@ RUN apt-get update && \
 COPY entrypoint /entrypoint
 
 ENTRYPOINT bash /entrypoint
+
+EXPOSE 443 80

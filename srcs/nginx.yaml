@@ -7,7 +7,11 @@ metadata:
 spec:
   ports:
   - port: 443
+    name: https
   - port: 80
+    name: http
+  - port: 2280
+    name: ssh
   selector:
     app: ft_services
     tier: nginx
@@ -22,11 +26,12 @@ metadata:
   labels:
     app: ft_services
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: ft_services
       tier: nginx
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -36,27 +41,53 @@ spec:
       restartPolicy: Always
       containers:
       - name: nginx
-        image: ./nginx
+        image: custom-nginx:1.1
+        imagePullPolicy: Never
         ports:
         - containerPort: 443
+          hostPort: 443
+          name: https
         - containerPort: 80
+          hostPort: 80
+          name: http
+        - containerPort: 22
+          hostPort: 2280
+          name: ssh
         volumeMounts:
         - name: nginx-config
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
           readOnly: true
-        - name: nginx-config
-          mountPath: /etc/nginx/ssl-cert.conf
-          subPath: ssl-cert.conf
+        - name: tls-key
+          mountPath: /etc/nginx/tls.crt
+          subPath: tls.crt
           readOnly: true
-        - name: nginx-ssl-key
-          mountPath: /etc/nginx/ssl-cert.key
-          subPath: ssl-cert.key
+        - name: tls-key
+          mountPath: /etc/nginx/tls.key
+          subPath: tls.key
+          readOnly: true
+        - name: ssh-host-keys
+          mountPath: /etc/ssh/ssh_host_ed25519_key
+          subPath: ssh_host_ed25519_key
+          readOnly: true
+        - name: ssh-host-keys
+          mountPath: /etc/ssh/ssh_host_rsa_key
+          subPath: ssh_host_rsa_key
           readOnly: true
       volumes:
-        - name: nginx-config
-          configMap:
-            name: nginx-config
-        - name: nginx-ssl-key
-          configMap:
-            name: nginx-ssl-key
+      - name: ssh-host-keys
+        secret:
+          secretName: ssh-host-keys
+          items:
+          - key: ssh_host_ed25519_key
+            path: ssh_host_ed25519_key
+            mode: 0600
+          - key: ssh_host_rsa_key
+            path: ssh_host_rsa_key
+            mode: 0600
+      - name: tls-key
+        secret:
+          secretName: tls-key
+      - name: nginx-config
+        configMap:
+          name: nginx-config

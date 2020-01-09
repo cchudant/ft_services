@@ -10,7 +10,7 @@ spec:
   selector:
     app: ft_services
     tier: admin
-  type: NodePort
+  type: LoadBalancer
 
 ---
 
@@ -21,6 +21,8 @@ metadata:
   labels:
     app: ft_services
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
@@ -38,13 +40,4 @@ spec:
         image: phpmyadmin/phpmyadmin
         ports:
         - containerPort: 80
-        env:
-        - name: PMA_HOST
-          value: mysql
-        - name: PMA_PORT
-          value: "3306"
-        - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-pass
-              key: password
+          hostPort: 5000

@@ -53,16 +53,14 @@ spec:
       - image: wordpress:4.8-apache
         name: wordpress
         env:
-        - name: WORDPRESS_DB_HOST
-          value: mysql
-        - name: WORDPRESS_DB_PASSWORD
+        - name: MYSQL_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mysql-pass
               key: password
         ports:
         - containerPort: 80
-          name: wordpress
+          hostPort: 5050
         volumeMounts:
         - name: wordpress-persistent-storage
           mountPath: /var/www/html

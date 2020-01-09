@@ -1,11 +1,14 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: http-ingress
+  name: ingress
 spec:
-  backend:
-    serviceName: nginx
-    servicePort: 443
-#  backend:
-#    serviceName: ftp-http-service
-#    servicePort: 21
+  tls:
+  - secretName: tls-keys
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nginx
+          servicePort: 80

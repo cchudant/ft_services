@@ -6,7 +6,7 @@ metadata:
     app: ft_services
 spec:
   ports:
-  - port: 22
+  - port: 21
   selector:
     app: ft_services
     tier: sftp
@@ -53,6 +53,7 @@ spec:
         image: atmoz/sftp:latest
         ports:
         - containerPort: 22
+          hostPort: 21
         volumeMounts:
         - mountPath: /home/unicorn
           name: sftp-persistant-storage
