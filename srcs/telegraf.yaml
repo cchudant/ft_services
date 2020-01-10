@@ -30,7 +30,7 @@ spec:
       serviceAccountName: telegraf-account
       containers:
       - name: telegraf
-        image: "telegraf:1.12-alpine"
+        image: telegraf:alpine
         env:
         - name: HOSTNAME
           value: "telegraf-polling-service"
