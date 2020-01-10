@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ftps
+  labels:
+    app: ft_services
+spec:
+  ports:
+  - port: 21
+  selector:
+    app: ft_services
+    tier: ftps
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ftps-pv-claim
+  labels:
+    app: ft_services
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ftps
+  labels:
+    app: ft_services
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: ft_services
+      tier: ftps
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ft_services
+        tier: ftps
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: ftps
+        image: custom-ftps:1.2
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 21
+          hostPort: 21
+        volumeMounts:
+        - mountPath: /home/ftpusers
+          name: ftps-persistant-storage
+        - mountPath: /etc/ssl/private
+          name: ftps-keys
+        env:
+        - name: FTP_USER
+          valueFrom:
+            secretKeyRef:
+              name: ftps-user
+              key: username
+        - name: FTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ftps-user
+              key: username
+      volumes:
+      - name: ftps-persistant-storage
+        persistentVolumeClaim:
+          claimName: ftps-pv-claim
+      - name: ftps-keys
+        secret:
+          secretName: ftps-keys

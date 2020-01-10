@@ -1,15 +1,11 @@
-#!/bin/bash
-
-mkdir /var/www
-mkdir /var/www/phpmyadmin
-mkdir /var/www/wordpress
-mkdir /var/www/grafana
+#!/bin/sh
 
 [ -z "$SSH_USER" ] && SSH_USER=admin
+[ -z "$SSH_PASSWORD" ] && SSH_PASSWORD=admin
 
-adduser --disabled-password --gecos "" "$SSH_USER"
-[ -s "$SSH_PASSWORD" ] && usermod --password "$SSH_PASSWORD" "$SSH_USER"
+adduser -D "$SSH_USER"
+echo "$SSH_USER:$SSH_PASSWORD" | chpasswd
+echo "user:password = $SSH_USER:$SSH_PASSWORD"
 
-service ssh start
-
+/usr/sbin/sshd
 /usr/sbin/nginx -g 'daemon off;'

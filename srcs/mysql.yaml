@@ -50,7 +50,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-      - image: mysql:5.6
+      - image: wangxian/alpine-mysql
         name: mysql
         env:
         - name: MYSQL_ROOT_PASSWORD

@@ -9,13 +9,14 @@ secretGenerator:
 - name: mysql-pass
   literals:
   - password=unicorn
-- name: sftp-users
+- name: ftps-user
   literals:
-  - users=unicorn:unicorn:1001
-- name: sftp-host-keys
-  files:
-  - ssh_host_rsa_key=sftp-keys/ssh_host_rsa_key
-  - ssh_host_ed25519_key=sftp-keys/ssh_host_ed25519_key
+  - username=unicorn
+  - password=unicorn
+- name: ssh-user
+  literals:
+  - username=unicorn
+  - password=unicorn
 - name: ssh-host-keys
   files:
   - ssh_host_rsa_key=ssh-keys/ssh_host_rsa_key
@@ -24,12 +25,15 @@ secretGenerator:
   files:
   - tls.key=tls-keys/tls.key
   - tls.crt=tls-keys/tls.crt
+- name: ftps-keys
+  files:
+  - pure-ftpd.pem=ftps-keys/pure-ftpd.pem
 resources:
 - nginx.yaml
 - mysql.yaml
 - wordpress.yaml
 - phpmyadmin.yaml
-- sftp.yaml
+- ftps.yaml
 - kubernetes-dashboard.yaml
 - ingress.yaml
 - grafana.yaml

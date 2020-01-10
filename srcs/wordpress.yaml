@@ -50,14 +50,21 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-      - image: wordpress:4.8-apache
+      - image: custom-wordpress:1.7
+        imagePullPolicy: Never
         name: wordpress
         env:
-        - name: MYSQL_PASSWORD
+        - name: WORDPRESS_DB_HOST
+          value: mysql
+        - name: WORDPRESS_DB_USER
+          value: root
+        - name: WORDPRESS_DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mysql-pass
               key: password
+        - name: WORDPRESS_DB_NAME
+          value: wordpress
         ports:
         - containerPort: 80
           hostPort: 5050

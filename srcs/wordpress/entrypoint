@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# users:
+# - unicorn:unicorn
+# - charles:123
+# - norminet:password123
+# - tristan:motdepasse
+
+MYSQL="mysql -h $WORDPRESS_DB_HOST -u $WORDPRESS_DB_USER --password=$WORDPRESS_DB_PASSWORD"
+
+# crash if connection error
+$MYSQL -e '' || exit 1
+
+if ! $MYSQL -e 'USE wordpress;'; then
+	echo Initializing database
+
+	$MYSQL -e 'CREATE DATABASE wordpress;'
+	$MYSQL < /wordpress-dump.sql
+fi
+
+sed -i 's/^exec .*//' /usr/local/bin/docker-entrypoint.sh
+docker-entrypoint.sh php-fpm
+
+/usr/sbin/nginx && /usr/local/sbin/php-fpm

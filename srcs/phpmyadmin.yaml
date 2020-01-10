@@ -37,7 +37,11 @@ spec:
       restartPolicy: Always
       containers:
       - name: phpmyadmin
-        image: phpmyadmin/phpmyadmin
+        image: custom-phpmyadmin:1.1
+        imagePullPolicy: Never
+        env:
+        - name: PMA_HOST
+          value: mysql
         ports:
         - containerPort: 80
           hostPort: 5000

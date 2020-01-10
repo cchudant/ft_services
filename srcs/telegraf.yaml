@@ -47,7 +47,9 @@ spec:
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
-  name: telegraf-role
+  name: influx:cluster:viewer
+  labels:
+    rbac.authorization.k8s.io/aggregate-view-telegraf: "true"
 rules:
 - apiGroups: [""]
   resources:
@@ -65,18 +67,32 @@ rules:
 
 ---
 
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: influx:telegraf
+aggregationRule:
+  clusterRoleSelectors:
+    - matchLabels:
+        rbac.authorization.k8s.io/aggregate-view-telegraf: "true"
+    - matchLabels:
+        rbac.authorization.k8s.io/aggregate-to-view: "true"
+rules: []
+
+---
+
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
-  name: telegraf-rolebinding
+  name: influx:telegraf:viewer
 subjects:
-  - kind: ServiceAccount
-    name: telegraf-account
-    namespace: default
+- kind: ServiceAccount
+  name: telegraf-account
+  namespace: default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: telegraf-role
+  name: influx:telegraf
 
 ---
 
