@@ -50,8 +50,9 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-      - image: wangxian/alpine-mysql
-        name: mysql
+      - name: mysql
+        image: custom-mysql:1.4
+        imagePullPolicy: Never
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
@@ -63,7 +64,7 @@ spec:
           name: mysql
         volumeMounts:
         - name: mysql-persistent-storage
-          mountPath: /var/lib/mysql
+          mountPath: /app/mysql
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:

@@ -15,7 +15,7 @@ if ! $MYSQL -e 'USE wordpress;'; then
 	echo Initializing database
 
 	$MYSQL -e 'CREATE DATABASE wordpress;'
-	$MYSQL < /wordpress-dump.sql
+	$MYSQL wordpress < /wordpress-dump.sql
 fi
 
 sed -i 's/^exec .*//' /usr/local/bin/docker-entrypoint.sh

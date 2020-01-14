@@ -1,0 +1,33 @@
+#!/bin/sh
+
+if [ ! -d /app/mysql/mysql ]
+then
+	echo Creating initial database...
+	mysql_install_db --user=root > /dev/null
+fi
+
+if [ ! -d "/run/mysqld" ]
+then
+	mkdir -p /run/mysqld
+fi
+
+tfile=`mktemp`
+if [ ! -f "$tfile" ]
+then
+	exit 1
+fi
+
+echo Root password is $MYSQL_ROOT_PASSWORD
+
+cat << EOF > $tfile
+USE mysql;
+FLUSH PRIVILEGES;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY "$MYSQL_ROOT_PASSWORD" WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
+UPDATE user SET password=PASSWORD("") WHERE user='root' AND host='localhost';
+EOF
+
+/usr/bin/mysqld --user=root --bootstrap --verbose=0 < $tfile
+rm -f $tfile
+
+exec /usr/bin/mysqld --user=root --console
