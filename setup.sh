@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if ! which docker >/dev/null 2>&1 ||
-    ! which minikube >/dev/null 2>&1;
+    ! which minikube >/dev/null 2>&1
 then
     echo Please install Docker and Minikube
     exit 1
@@ -25,6 +25,7 @@ docker build -t custom-nginx:1.11 srcs/nginx
 docker build -t custom-ftps:1.2 srcs/ftps
 docker build -t custom-wordpress:1.7 srcs/wordpress
 docker build -t custom-phpmyadmin:1.1 srcs/phpmyadmin
+docker build -t custom-grafana:1.0 srcs/grafana
 
 if [ "$1" = "delete" ]
 then

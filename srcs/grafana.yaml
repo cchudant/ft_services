@@ -13,26 +13,13 @@ spec:
 
 ---
 
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: grafana-pv-claim
-  labels:
-    app: grafana
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-
----
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
@@ -42,35 +29,22 @@ spec:
       labels:
         app: grafana
     spec:
+      restartPolicy: Always
       containers:
       - name: grafana
-        image: grafana/grafana
+        image: custom-grafana:1.0
+        imagePullPolicy: Never
         ports:
         - containerPort: 3000
           hostPort: 3000
-        volumeMounts:
-        - mountPath: /var/lib/grafana
-          name: grafana-persistent-storage
         env:
         - name: INFLUXDB_HOST
           value: influxdb
         - name: GF_SERVER_HTTP_PORT
           value: "3000"
-          # The following env variables are required to make Grafana accessible via
-          # the kubernetes api-server proxy. On production clusters, we recommend
-          # removing these env variables, setup auth for grafana, and expose the grafana
-          # service using a LoadBalancer or a public IP.
-        # - name: GF_AUTH_BASIC_ENABLED
-        #   value: "false"
-        # - name: GF_AUTH_ANONYMOUS_ENABLED
-        #   value: "true"
-        # - name: GF_AUTH_ANONYMOUS_ORG_ROLE
-        #   value: Admin
-        # - name: GF_SERVER_ROOT_URL
-          # If you're only using the API Server proxy, set this value instead:
-          # value: /api/v1/namespaces/kube-system/services/monitoring-grafana/proxy
-        #   value: /
-      volumes:
-      - name: grafana-persistent-storage
-        persistentVolumeClaim:
-          claimName: grafana-pv-claim
+        - name: GF_AUTH_BASIC_ENABLED
+          value: "false"
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+          value: Admin
