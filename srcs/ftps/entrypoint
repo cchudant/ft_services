@@ -10,4 +10,4 @@ adduser -D "$FTP_USER"
 echo "$FTP_USER:$FTP_PASSWORD" | chpasswd
 echo "user:password = $FTP_USER:$FTP_PASSWORD"
 
-/usr/sbin/pure-ftpd -Y 2
+/usr/sbin/pure-ftpd -Y 2 -p 15477:15477 -P "##MINIKUBE_IP##"

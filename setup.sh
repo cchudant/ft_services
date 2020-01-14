@@ -20,9 +20,17 @@ then
     minikube addons enable ingress
 fi
 
+MINIKUBE_IP=$(minikube ip)
+
+if ! NO_REPLACE
+then
+    sed -i '' "s/##MINIKUBE_IP##/$MINIKUBE_IP/g" srcs/ftps/entrypoint
+    sed -i '' "s/##MINIKUBE_IP##/$MINIKUBE_IP/g" srcs/wordpress/wordpress_dump.sql
+fi
+
 eval $(minikube docker-env)
 docker build -t custom-nginx:1.11 srcs/nginx
-docker build -t custom-ftps:1.2 srcs/ftps
+docker build -t custom-ftps:1.6 srcs/ftps
 docker build -t custom-wordpress:1.7 srcs/wordpress
 docker build -t custom-phpmyadmin:1.1 srcs/phpmyadmin
 docker build -t custom-grafana:1.0 srcs/grafana
