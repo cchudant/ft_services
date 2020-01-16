@@ -8,4 +8,5 @@ COPY entrypoint /entrypoint
 
 RUN mkdir /app
 
+EXPOSE 3306
 CMD sh /entrypoint

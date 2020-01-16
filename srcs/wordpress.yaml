@@ -50,7 +50,7 @@ spec:
     spec:
       restartPolicy: Always
       containers:
-      - image: custom-wordpress:1.7
+      - image: custom-wordpress:1.9
         imagePullPolicy: Never
         name: wordpress
         env:
