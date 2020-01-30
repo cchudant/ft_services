@@ -1,10 +1,10 @@
 configMapGenerator:
 - name: nginx-config
   files:
-    - nginx/nginx.conf
+  - nginx/nginx.conf
 - name: telegraf-config
   files:
-    - telegraf/telegraf.conf
+  - telegraf.conf=telegraf/telegraf-target.conf
 secretGenerator:
 - name: mysql-pass
   literals:

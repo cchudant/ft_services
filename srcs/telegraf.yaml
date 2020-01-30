@@ -44,55 +44,18 @@ spec:
 
 ---
 
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRole
-metadata:
-  name: influx:cluster:viewer
-  labels:
-    rbac.authorization.k8s.io/aggregate-view-telegraf: "true"
-rules:
-- apiGroups: [""]
-  resources:
-  - persistentvolumes
-  - nodes
-  - endpoints
-  - deployments
-  - services
-  - pods
-  - statefulsets
-  - daemonsets
-  - persistentvolumeclaims
-  - ingresses
-  verbs: ["get", "list"]
-
----
-
-kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: influx:telegraf
-aggregationRule:
-  clusterRoleSelectors:
-    - matchLabels:
-        rbac.authorization.k8s.io/aggregate-view-telegraf: "true"
-    - matchLabels:
-        rbac.authorization.k8s.io/aggregate-to-view: "true"
-rules: []
-
----
-
-apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
-  name: influx:telegraf:viewer
+  name: telegraf-account
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
 subjects:
 - kind: ServiceAccount
   name: telegraf-account
   namespace: default
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: influx:telegraf
 
 ---
 

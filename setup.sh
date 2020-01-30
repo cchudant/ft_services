@@ -13,7 +13,8 @@ if ! minikube status >/dev/null 2>&1
 then
     echo Minikube is not started! Starting now...
     if ! minikube start --vm-driver=virtualbox \
-        --cpus 3 --disk-size=30000mb --memory=3000mb
+        --cpus 3 --disk-size=30000mb --memory=3000mb \
+        --bootstrapper=kubeadm # allow telegraf to query metrics
     then
         echo Cannot start minikube!
         exit 1
@@ -29,13 +30,15 @@ cp srcs/ftps/entrypoint srcs/ftps/entrypoint-target
 sed -i '' "s/##MINIKUBE_IP##/$MINIKUBE_IP/g" srcs/ftps/entrypoint-target
 cp srcs/wordpress/wordpress_dump.sql srcs/wordpress/wordpress_dump-target.sql
 sed -i '' "s/##MINIKUBE_IP##/$MINIKUBE_IP/g" srcs/wordpress/wordpress_dump-target.sql
+cp srcs/telegraf/telegraf.conf srcs/telegraf/telegraf-target.conf
+sed -i '' "s/##MINIKUBE_IP##/$MINIKUBE_IP/g" srcs/telegraf/telegraf-target.conf
 
 eval $(minikube docker-env)
 docker build -t custom-nginx:1.11 srcs/nginx
 docker build -t custom-ftps:1.6 srcs/ftps
 docker build -t custom-wordpress:1.9 srcs/wordpress
 docker build -t custom-phpmyadmin:1.1 srcs/phpmyadmin
-docker build -t custom-grafana:1.0 srcs/grafana
+docker build -t custom-grafana:1.1 srcs/grafana
 docker build -t custom-mysql:1.11 srcs/mysql
 
 # Apply yaml files

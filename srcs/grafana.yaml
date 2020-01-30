@@ -32,14 +32,12 @@ spec:
       restartPolicy: Always
       containers:
       - name: grafana
-        image: custom-grafana:1.0
+        image: custom-grafana:1.1
         imagePullPolicy: Never
         ports:
         - containerPort: 3000
           hostPort: 3000
         env:
-        - name: INFLUXDB_HOST
-          value: influxdb
         - name: GF_SERVER_HTTP_PORT
           value: "3000"
         - name: GF_AUTH_BASIC_ENABLED
